@@ -1,0 +1,14 @@
+﻿on_game_start_after_lobby = {
+	on_actions = {
+		Inherichance_compat
+	}
+}
+
+Inherichance_compat = {
+	effect = {
+		set_global_variable = {
+			name = Inherichance_is_loaded
+			value = yes
+		}
+	}
+}

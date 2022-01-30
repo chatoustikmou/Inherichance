@@ -1,5 +1,5 @@
 ﻿l_english:
-  INHERICHANCE_NAME:1 "[GetPlayer.GetShortUINameNotMeNoTooltip], [GetPlayer.GetAge]"
+  LEGACY_NAME:1 "[GetPlayer.GetShortUINameNotMeNoTooltip], [GetPlayer.GetAge]"
   INHERICHANCE_EVENT_WINDOW_CLOSE:1 "Continue as [GetPlayer.GetShortUINameNotMeNoTooltip]"
   INHERICHANCE_HEIR_DESC:"[SuccessionEventWindow.GetPlayerHeir.GetShortUINameNotMeNoTooltip] inherited [SuccessionEventWindow.GetDeadCharacter.GetPrimaryTitle.GetName] from [SuccessionEventWindow.GetDeadCharacter.GetShortUINameNotMeNoTooltip]. Will you press your claim, or will you try to keep the peace with [SuccessionEventWindow.GetPlayerHeir.GetSuccessionRelation( GetPlayer)|l]?"
 

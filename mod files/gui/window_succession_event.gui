@@ -9,12 +9,14 @@ window = {
 	layer = confirmation
 	alwaystransparent = yes
 
+	# [UniUI] [Inherichance]
+	using = UniUI_Inherichance_window_succession_event_show_state
+	# [/Inherichance] [/UniUI]
+
 	state = {
 		name =_show
-		#trigger_on_create = yes
 		on_finish = "[PdxGuiTriggerAllAnimations('ruler_transition_appear')]"
 		on_start = "[GetVariableSystem.Clear( 'ruler_transition_remove_fade')]"
-		on_start = "[GetScriptedGui('sgui_inherichance').Execute(GuiScope.SetRoot( GetPlayer.MakeScope ).AddScope('dead_character',SuccessionEventWindow.GetDeadCharacter.MakeScope).End)]"
 	}
 
 	state = {
@@ -26,7 +28,6 @@ window = {
 	button = {
 		size = { 100% 100% }
 		alpha = 0
-		#	filter_mouse = all
 		visible = "[Not(GetVariableSystem.Exists( 'ruler_transition_remove_fade'))]"
 
 		state = {
@@ -56,9 +57,12 @@ window = {
 		parentanchor = center
 		position = { 0 -500 }
 		alpha = 0
-		size = { 1000 750 }
+		size = { 1000 760 }
 		filter_mouse = all
 		alwaystransparent = no
+
+		using = Window_Background
+		using = Window_Decoration_Spike
 
 		state = {
 			name = _hide
@@ -81,7 +85,6 @@ window = {
 			name = ruler_transition_appear
 			next = b
 			duration = 1.4
-			#duration = 0
 			trigger_on_create = yes
 
 			start_sound = {
@@ -140,8 +143,6 @@ window = {
 			position = { 0 -0 }
 		}
 
-
-
 		icon = {
 			parentanchor = center
 			size = { 200% 200% }
@@ -172,32 +173,29 @@ window = {
 			}
 		}
 
-		widget = {
-			size = { 100% 100% }
-			using = Window_Background
-			using = Window_Decoration_Spike
-		}
 
 		vbox = {
 			using = Window_Margins
+			margin_bottom = 15
+
+			background = {
+				texture = "gfx/interface/illustrations/background_ruler_transition.dds"
+				margin = { -35 -18 }
+				fittype = fill
+
+			}
 
 			widget = {
 				name = "top"
 				visible = "[SuccessionEventWindow.IsSuccession]"
 				layoutpolicy_horizontal = expanding
-				size = { 0 105 }
+				size = { 0 106 }
 				allow_outside = yes
-
-				background = {
-					using = Background_Area_Dark
-					margin = { 3 0 }
-					margin_top = 5
-				}
 
 				text_single = {
 					name = "header"
 					parentanchor = center
-					position = { 0 -20 }
+					position = { 0 -14 }
 					text = "[SuccessionEventWindow.GetHeader]"
 					default_format = "#N"
 					using = Font_Type_Flavor
@@ -207,7 +205,7 @@ window = {
 
 				flowcontainer = {
 					parentanchor = bottom|hcenter
-					position = { 0 22 }
+					position = { 0 28 }
 					spacing = 20
 					ignoreinvisible = yes
 
@@ -300,8 +298,6 @@ window = {
 				vbox = {
 					name = "top_lineage"
 					visible = "[SuccessionEventWindow.IsLineage]"
-					layoutpolicy_horizontal = expanding
-
 
 					text_single = {
 						text = "SUCCESSION_INHERITED_TITLES"
@@ -309,7 +305,6 @@ window = {
 						align = left
 						layoutpolicy_horizontal = expanding
 					}
-
 
 					hbox = {
 						layoutpolicy_horizontal = expanding
@@ -326,7 +321,6 @@ window = {
 								coa_title_small_crown = {
 								}
 							}
-
 						}
 
 						expand = {}
@@ -385,21 +379,31 @@ window = {
 						using = Animation_Transition_End
 					}
 
-					### SUCCEESION
+					### SUCCESSION
 					widget = {
 						size = { 100% 100% }
 
-						# Left Character
 						vbox = {
 							visible = "[SuccessionEventWindow.IsSuccessorTabOpen]"
 
 							hbox = {
 								layoutpolicy_vertical = expanding
 
+								# Left Character
 								vbox = {
 									name = "left"
 									datacontext = "[SuccessionEventWindow.GetDeadCharacterLegacy]"
 									layoutpolicy_vertical = expanding
+									margin_top = 62
+
+									#background = {
+										#using = Background_Area
+
+										#modify_texture = {
+											#texture = "gfx/interface/component_masks/mask_fade_horizontal_right.dds"
+											#blend_mode = alphamultiply
+										#}
+									#}
 
 									widget = {
 										size = { 250 340 }
@@ -412,6 +416,10 @@ window = {
 											blockoverride "dead_icon" {}
 											scale = 1.2
 										}
+									}
+
+									spacer = {
+										size = { 20 10 }
 									}
 
 									hbox_legacy_status = {}
@@ -430,6 +438,10 @@ window = {
 										tooltip = "LEGACY_REIGN_TT"
 									}
 
+									spacer = {
+										size = { 20 10 }
+									}
+
 									expand = {
 										layoutpolicy_vertical = expanding
 									}
@@ -442,7 +454,7 @@ window = {
 									layoutpolicy_vertical = expanding
 									layoutpolicy_horizontal = expanding
 									margin = { 10 0 }
-									margin_top = 40
+									margin_top = 50
 
 									hbox = {
 										layoutpolicy_horizontal = expanding
@@ -464,32 +476,36 @@ window = {
 										}
 
 										widget = {
+											# [UniUI] [Vanilla]
+											visible = "[Not(GetGlobalVariable('Inherichance_is_loaded').IsSet)]"
+											# [/Vanilla] [UniUI]
 											layoutpolicy_vertical = expanding
 											layoutpolicy_horizontal = expanding
 
 											coa_title_small_crown = {
-												datacontext = "[GetPlayer.GetPrimaryTitle]"
+												datacontext = "[SuccessionEventWindow.GetPlayerHeir.GetPrimaryTitle]"
 												visible = "[Title.IsValid]"
 												parentanchor = bottom|hcenter
 											}
 										}
+										
+										# [UniUI] [Inherichance]
+										widget = {
+											layoutpolicy_vertical = expanding
+											layoutpolicy_horizontal = expanding
+
+											
+											UniUI_Inherichance_coa_title_small_crown = {}
+
+										}
+										# [/UniUI] [/Inherichance]
 									}
 
 									vbox = {
-										layoutpolicy_vertical = expanding
+										# [UniUI] [Vanilla]
+										visible = "[Not(GetGlobalVariable('Inherichance_is_loaded').IsSet)]"
+										# [/Vanilla] [UniUI]
 										margin = { 10 10 }
-
-										text_multi = {
-											name = "end_date_description"
-											size = { 384 120 }
-											text = "SSUCCESSION_EVENT_WINDOW_END_DATE_DESC"
-											using = Font_Size_Medium
-											visible = "[SuccessionEventWindow.IsEndDateReached]"
-											# autoresize = yes
-											# max_width = 400
-										}
-
-										
 
 										text_multi = {
 											name = "dead_description"
@@ -497,34 +513,28 @@ window = {
 											text = "[SuccessionEventWindow.GetDeadDesc]"
 											visible = "[And(Not(SuccessionEventWindow.IsEndDateReached), Not(SuccessionEventWindow.GetDeadCharacter.IsAlive))]"
 											using = Font_Size_Medium
-											
-										}
-
-										spacer = {
-											size = { 10 20 }
 										}
 
 										text_multi = {
-											visible = "[And(Not(SuccessionEventWindow.IsEndDateReached),EqualTo_uint32(GetPlayer.GetID,SuccessionEventWindow.GetPlayerHeir.GetID))]"
 											name = "heir_description"
 											size = { 384 120 }
 											text = "[SuccessionEventWindow.GetHeirDesc]"
 											using = Font_Size_Medium
-											# autoresize = yes
-											# max_width = 400
+											visible = "[Not(SuccessionEventWindow.IsEndDateReached)]"
 										}
 
 										text_multi = {
-											visible = "[And(Not(SuccessionEventWindow.IsEndDateReached),Not(EqualTo_uint32(GetPlayer.GetID,SuccessionEventWindow.GetPlayerHeir.GetID)))]"
-											name = "heir_description_inherichance"
+											name = "end_date_description"
 											size = { 384 120 }
-											text = "INHERICHANCE_HEIR_DESC"
+											text = "SUCCESSION_EVENT_WINDOW_END_DATE_DESC"
 											using = Font_Size_Medium
-											# autoresize = yes
-											# max_width = 400
+											visible = "[SuccessionEventWindow.IsEndDateReached]"
 										}
-										expand = {}
 									}
+
+									# [UniUI] [Inherichance]
+									UniUI_Inherichance_window_succession_event_text = {}
+									# [/Inherichance] [/UniUI]
 
 									expand = {
 										layoutpolicy_vertical = expanding
@@ -533,8 +543,21 @@ window = {
 
 								### Right Character
 								vbox = {
+									# [UniUI] [Vanilla]
+									visible = "[Not(GetGlobalVariable('Inherichance_is_loaded').IsSet)]"
+									# [/Vanilla] [/UniUI]
 									layoutpolicy_vertical = expanding
 									spacing = 5
+									margin_top = 32
+
+									#background = {
+										#using = Background_Area
+
+										#modify_texture = {
+											#texture = "gfx/interface/component_masks/mask_fade_horizontal.dds"
+											#blend_mode = alphamultiply
+										#}
+									#}
 
 									text_label_center = {
 										visible = "[SuccessionEventWindow.GetPlayerHeir.IsValid]"
@@ -548,10 +571,6 @@ window = {
 										layoutpolicy_vertical = expanding
 
 										blockoverride "portrait_glow" {}
-
-										background = {
-											using = Background_Area
-										}
 									}
 
 									vbox_dynasty = {
@@ -561,6 +580,10 @@ window = {
 										layoutpolicy_vertical = expanding
 									}
 								}
+								
+								# [UniUI] [Inherichance]
+								UniUI_Inherichance_window_succession_event_right_character = {}
+								# [/Inherichance] [/UniUI]
 							}
 						}
 					}
@@ -571,10 +594,7 @@ window = {
 						size = { 100% 100% }
 
 						hbox = {
-							layoutpolicy_horizontal = expanding
-							layoutpolicy_vertical = expanding
-							margin_right = 16
-							margin_top = 40
+							margin = { 16 40 }
 
 							vbox_heir = {
 								name = "right"
@@ -595,18 +615,27 @@ window = {
 								layoutpolicy_horizontal = expanding
 								layoutpolicy_vertical = expanding
 
+								blockoverride "scrollbox_background_fade" {}
+								blockoverride "scrollbox_background" {}
 								blockoverride "scrollbox_content" {
 
 									vbox = {
+										# [UniUI] [Vanilla]
+										visible = "[Not(GetGlobalVariable('Inherichance_is_loaded').IsSet)]"
+										# [/Vanilla] [/UniUI]
 										name = "titles"
 										layoutpolicy_vertical = expanding
 										layoutpolicy_horizontal = expanding
-										margin = { 6 6 }
+										margin = { 16 4 }
 										spacing = 6
 
 										text_single = {
 											layoutpolicy_horizontal = expanding
 											text = "SUCCESSION_INHERITED_TITLES"
+										}
+
+										background = {
+											using = Background_Area_With_Header_Dark
 										}
 
 										hbox = {
@@ -615,15 +644,15 @@ window = {
 
 											fixedgridbox = { # hbox doesn't work with datamodel_wrap
 												name = "inherited"
-												datamodel = "[GetPlayer.MakeScope.Var('inherichance_titles_story').GetList('inherited_titles')]"
+												datamodel = "[SuccessionEventWindow.GetInheritedTitles]"
 												datamodel_wrap = 11
 												addcolumn = 56
 												addrow = 56
 												flipdirection = yes
 
 												item = {
-													
-													coa_title_small_crown_inherichance = {}
+													coa_title_small_crown = {
+													}
 												}
 											}
 
@@ -635,7 +664,9 @@ window = {
 											layoutpolicy_horizontal = expanding
 
 											text_single = {
-												text = "INHERICHANCE_LOST_TITLES"
+												text = "SUCCESSION_LOST_TITLES"
+												margin_bottom = 10
+												margin_right = 5
 											}
 
 											button_expand = {
@@ -648,10 +679,10 @@ window = {
 											expand = {}
 										}
 
-										divider = {
-											visible = "[SuccessionEventWindow.HasLostTitles]"
-											layoutpolicy_horizontal = expanding
-										}
+										#divider = {
+											#visible = "[SuccessionEventWindow.HasLostTitles]"
+											#layoutpolicy_horizontal = expanding
+										#}
 
 										vbox = {
 											name = "lost_titles"
@@ -660,11 +691,10 @@ window = {
 											margin_top = 5
 
 											vbox = {
-												datamodel = "[GetPlayer.MakeScope.Var('inherichance_heirs_story').GetList('other_heirs')]"
+												datamodel = "[SuccessionEventWindow.GetLostTitles]"
 												layoutpolicy_horizontal = expanding
 												spacing = 8
 
-												
 												item = {
 													vbox = {
 														layoutpolicy_horizontal = expanding
@@ -672,7 +702,7 @@ window = {
 
 														text_single = {
 															layoutpolicy_horizontal = expanding
-															text = "INHERICHANCE_LOST_TITLE_SHARE"
+															text = "SUCCESSION_LOST_TITLE_SHARE"
 															margin_left = 5
 														}
 
@@ -682,7 +712,7 @@ window = {
 
 															portrait_head_small = {
 																name = "portrait"
-																datacontext = "[Scope.GetCharacter]"
+																datacontext = "[SuccessionEventWindowLostTitlesItem.GetHeir]"
 
 																blockoverride "portrait_transformation"
 																{
@@ -691,16 +721,13 @@ window = {
 																}
 															}
 
-															fixedgridbox = { # hbox doesn't work with datamodel_wrap
-																name = "inherited"
-																datamodel = "[Scope.Var('inherichance_titles_story').GetList('inherited_titles')]"
-																datamodel_wrap = 9
-																addcolumn = 56
-																addrow = 56
-																flipdirection = yes
+															hbox = {
+																name = "title_member_grid"
+																datamodel = "[SuccessionEventWindowLostTitlesItem.GetTitles]"
+																datamodel_wrap = 10
 
 																item = {
-																	coa_title_small_crown_inherichance = {
+																	coa_title_tiny_crown = {
 																	}
 																}
 															}
@@ -716,10 +743,13 @@ window = {
 											layoutpolicy_vertical = expanding
 										}
 									}
+									
+									# [UniUI] [Inherichance]
+									UniUI_Inherichance_window_succession_event_titles = {}
+									# [/Inherichance] [/UniUI]
 								}
 							}
 						}
-
 					}
 
 					### LINEAGE
@@ -727,12 +757,33 @@ window = {
 						size = { 100% 100% }
 						visible = "[SuccessionEventWindow.IsLineageTabOpen]"
 						margin = { 5 0 }
-						margin_top = 30
+						margin_top = 20
+
+						widget = {
+							size = { 20% 100% }
+
+							background = {
+								using = Background_Area_Dark
+								alpha = 0.6
+								margin_left = 35
+								margin_right = 90
+
+								modify_texture = {
+									texture = "gfx/interface/component_masks/mask_fade_horizontal_middle_thick_vertical.dds"
+									spriteType = Corneredstretched
+									blend_mode = alphamultiply
+								}
+
+								modify_texture = {
+									texture = "gfx/interface/component_masks/mask_fade_horizontal_right.dds"
+									spriteType = Corneredstretched
+									blend_mode = alphamultiply
+								}
+							}
+						}
 
 						scrollarea = {
 							size = { 100% 100% }
-							#	layoutpolicy_horizontal = expanding
-							#	layoutpolicy_vertical = expanding
 
 							scrollbarpolicy_vertical = always_off
 
@@ -748,28 +799,115 @@ window = {
 								hbox = {
 									name = "info"
 									parentanchor = vcenter|right
-									margin = { 30 0 }
+									margin = { 30 30 }
+									margin_top = 120
 
 									expand = {}
 
 									hbox = {
-										margin_left = 50
-										margin_right = 60
-
 										datamodel = "[SuccessionEventWindow.GetLegacy]"
-										spacing = 60
+										margin_left = 50
+										spacing = 100
+
+										### LINEAGE ###
+										background = {
+											visible = "[And(SuccessionEventWindow.GetPlayerHeir.IsValid, GreaterThanOrEqualTo_int32(GetDataModelSize(SuccessionEventWindow.GetLegacy), '(int32)1'))]"
+											margin = { 0 -180 }
+											margin_right = 170
+											margin_left = 200
+
+											texture = "gfx/interface/colors/white.dds"
+											color = { 0.3 0.3 0.35 0.8 }
+											spriteType = Corneredtiled
+											size = { 3 3 }
+
+											## EDGE FADE
+											modify_texture = {
+												texture = "gfx/interface/component_masks/mask_edge_3px.dds"
+												spriteType = Corneredtiled
+												spriteborder = { 4 4 }
+												blend_mode = alphamultiply
+											}
+
+											### SCRATCHES
+											modify_texture = {
+												texture = "gfx/interface/component_masks/mask_scratches.dds"
+												spriteType = Corneredtiled
+												spriteborder = { 0 0 }
+												blend_mode = alphamultiply
+											}
+
+
+											modify_texture = {
+												texture = "gfx/interface/component_masks/mask_fade_horizontal_extended_2.dds"
+												spriteType = Corneredstretched
+												blend_mode = alphamultiply
+											}
+										}
+
+										### NO LINEAGE ###
+										background = {
+											visible = "[And(Not(SuccessionEventWindow.GetPlayerHeir.IsValid), GreaterThanOrEqualTo_int32(GetDataModelSize(SuccessionEventWindow.GetLegacy), '(int32)1'))]"
+											margin = { 0 -180 }
+											margin_right = -130
+											margin_left = 200
+
+											texture = "gfx/interface/colors/white.dds"
+											color = { 0.3 0.3 0.35 0.8 }
+											spriteType = Corneredtiled
+											size = { 3 3 }
+
+											## EDGE FADE
+											modify_texture = {
+												texture = "gfx/interface/component_masks/mask_edge_3px.dds"
+												spriteType = Corneredtiled
+												spriteborder = { 4 4 }
+												blend_mode = alphamultiply
+											}
+
+											### SCRATCHES
+											modify_texture = {
+												texture = "gfx/interface/component_masks/mask_scratches.dds"
+												spriteType = Corneredtiled
+												spriteborder = { 0 0 }
+												blend_mode = alphamultiply
+											}
+
+
+											modify_texture = {
+												texture = "gfx/interface/component_masks/mask_fade_horizontal_extended_2.dds"
+												spriteType = Corneredstretched
+												blend_mode = alphamultiply
+											}
+										}
 
 										item = {
 											vbox_legacy_item = {
-												visible = "[Not(EqualTo_string(LegacyItem.GetEndDate.GetString,LegacyItem.GetStartDate.GetString))]"
+												# [UniUI] [Inherichance]
+												using = UniUI_Inherichance_reign_duration_visibility
+												# [/Inherichance] [/UniUI]
 											}
 										}
 									}
 
-									vbox_current_lineage = {
-										visible = "[SuccessionEventWindow.GetPlayerHeir.IsValid]"
-										datacontext = "[SuccessionEventWindow.GetPlayerHeirLegacy]"
+									spacer = {
+										visible = "[GreaterThanOrEqualTo_int32(GetDataModelSize(SuccessionEventWindow.GetLegacy), '(int32)1')]"
+										size = { 100 0 }
 									}
+
+									# [UniUI] [Vanilla] Not Inherichance
+									widget = {
+										visible = "[Not(GetGlobalVariable('Inherichance_is_loaded').IsSet)]"
+										vbox_current_lineage = {
+											visible = "[SuccessionEventWindow.GetPlayerHeir.IsValid]"
+											datacontext = "[SuccessionEventWindow.GetPlayerHeirLegacy]"
+										}
+									}
+									# [Vanilla]
+									
+									# [Inherichance]
+									UniUI_Inherichance_window_succession_event_vbox_current_lineage = {}
+									# [/Inherichance] [/UniUI]
 
 									vbox_dynasty = {
 										name = "dynasty_right"
@@ -786,23 +924,26 @@ window = {
 			}
 
 			hbox = {
-				margin = { 0 10 }
+				name = "bottom"
+				margin = { 0 30 }
 				visible = "[SuccessionEventWindow.IsSuccession]"
 				layoutpolicy_horizontal = expanding
 
-				background = {
-					using = Background_Area_Dark
-				}
+				#background = {
+					#using = Background_Area_Dark
+				#}
 
 				hbox = {
+					# [UniUI] [Vanilla]
+					visible = "[Not(GetGlobalVariable('Inherichance_is_loaded').IsSet)]"
+					# [/Vanilla] [/UniUI]
 					spacing = 15
 
 					button_primary = {
 						name = "close_button"
 						visible = "[SuccessionEventWindow.GetPlayerHeir.IsValid]"
 						onclick = "[PdxGuiTriggerAllAnimations('ruler_transition_reset')]"
-						onclick = "[GetScriptedGui('sgui_end_inherichance').Execute(GuiScope.SetRoot( GetPlayer.MakeScope ).End)]"
-						text = "INHERICHANCE_EVENT_WINDOW_CLOSE"
+						text = "SUCCESSION_EVENT_WINDOW_CLOSE"
 						min_width = 330
 					}
 
@@ -811,7 +952,6 @@ window = {
 						visible = "[And( Not(SuccessionEventWindow.GetPlayerHeir.IsValid), SuccessionEventWindow.CanChangeCharacter)]"
 						text = "SUCCESSION_EVENT_WINDOW_OBSERVER"
 						onclick = "[SuccessionEventWindow.GoToObserver]"
-						onclick = "[GetScriptedGui('sgui_end_inherichance').Execute(GuiScope.SetRoot( GetPlayer.MakeScope ).End)]"
 						default_format = "#high"
 					}
 
@@ -820,7 +960,6 @@ window = {
 						visible = "[And( Not(SuccessionEventWindow.GetPlayerHeir.IsValid), SuccessionEventWindow.CanChangeCharacter)]"
 						text = "SUCCESSION_EVENT_WINDOW_CHANGE_CHARACTER"
 						onclick = "[SuccessionEventWindow.ChooseNewCharacter]"
-						onclick = "[GetScriptedGui('sgui_end_inherichance').Execute(GuiScope.SetRoot( GetPlayer.MakeScope ).End)]"
 						default_format = "#high"
 					}
 
@@ -830,10 +969,13 @@ window = {
 						text = "[SuccessionEventWindow.GetExitName]"
 						tooltip = "[SuccessionEventWindow.GetExitTooltip]"
 						onclick = "[SuccessionEventWindow.GoToMenu]"
-						onclick = "[GetScriptedGui('sgui_end_inherichance').Execute(GuiScope.SetRoot( GetPlayer.MakeScope ).End)]"
 						default_format = "#high"
 					}
 				}
+
+				# [UniUI] [Inherichance]
+				UniUI_Inherichance_window_succession_event_buttons = {}
+				# [/Inherichance] [/UniUI]
 			}
 		}
 	}
@@ -845,6 +987,40 @@ window = {
 
 types Legacy
 {
+	type tree_background = background {
+		texture = "gfx/interface/window_ruler_transition/illustration_tree.dds"
+		margin = { -35 -50 }
+		fittype = centercrop
+		spriteType = corneredTiled
+		spriteborder = { 30 0 }
+		alpha = 0.8
+
+		using = Mask_Rough_Edges
+
+		modify_texture = {
+			texture = "gfx/interface/component_masks/mask_brushed.dds"
+			blend_mode = alphamultiply
+		}
+
+		modify_texture = {
+			texture = "gfx/interface/component_masks/mask_fade_halfcircle_inverted.dds"
+			blend_mode = alphamultiply
+			alpha = 0.6
+		}
+
+		modify_texture = {
+			texture = "gfx/interface/component_masks/mask_fade_horizontal_middle.dds"
+			blend_mode = alphamultiply
+			alpha = 0.3
+		}
+
+		modify_texture = {
+			texture = "gfx/interface/component_masks/mask_fade_vertical.dds"
+			blend_mode = alphamultiply
+			alpha = 0.4
+		}
+	}
+
 	type vbox_dynasty = vbox {
 		spacing = 20
 		spacer = {
@@ -879,7 +1055,7 @@ types Legacy
 			size = { 250 340 }
 
 			portrait_body = {
-				datacontext = "[GetPlayer]"
+				datacontext = "[SuccessionEventWindow.GetPlayerHeir]"
 				blockoverride "status_icons" {}
 				blockoverride "opinion_box" {}
 				blockoverride "coa" {}
@@ -892,23 +1068,18 @@ types Legacy
 			size = { 20 10 }
 		}
 
-		hbox_legacy_status = {
-			visible = no
-		}
-		hbox_legacy_status_inherichance = {
-			visible = yes
-		}
+		hbox_legacy_status = {}
 
 		text_single = {
 			layoutpolicy_horizontal = expanding
 			autoresize = no
-			text = "INHERICHANCE_NAME"
+			text = "LEGACY_NAME"
 			default_format = "#high"
 			align = center
 		}
 
 		text_single = {
-			text = "[GetPlayer.GetSuccessionRelation( SuccessionEventWindow.GetDeadCharacter)]"
+			text = "[SuccessionEventWindow.GetPlayerHeir.GetSuccessionRelation( SuccessionEventWindow.GetDeadCharacter)]"
 		}
 
 		spacer = {
@@ -916,12 +1087,12 @@ types Legacy
 		}
 
 		text_label_center = {
-			visible = "[GetPlayer.IsAtWar]"
+			visible = "[SuccessionEventWindow.GetPlayerHeir.IsAtWar]"
 			text = "LEGACY_IS_AT_WAR"
 		}
 
 		text_label_center = {
-			visible = "[Not(GetPlayer.GetPlayerHeir.IsValid)]"
+			visible = "[Not(SuccessionEventWindow.GetPlayerHeir.GetPlayerHeir.IsValid)]"
 			text = "LEGACY_NO_HEIR"
 		}
 
@@ -929,7 +1100,7 @@ types Legacy
 	}
 
 	type vbox_current_lineage = vbox {
-		datacontext = "[GetPlayer]"
+		datacontext = "[SuccessionEventWindow.GetPlayerHeir]"
 
 		portrait_body = {
 			blockoverride "status_icons" {}
@@ -939,16 +1110,16 @@ types Legacy
 
 			blockoverride "portrait_button"
 			{
-				size = { 250 370 }
+				size = { 300 444 }
 			}
 
 			blockoverride "portrait_glow" {}
 		}
 
-		hbox_legacy_status_inherichance = {}
+		hbox_legacy_status = {}
 
 		text_single = {
-			text = "INHERICHANCE_NAME"
+			text = "LEGACY_NAME"
 			default_Format = "#high"
 		}
 
@@ -1058,88 +1229,6 @@ types Legacy
 		}
 	}
 
-	type hbox_legacy_status_inherichance = hbox {
-		spacing = 2
-
-		widget = {
-			visible = "[ObjectsEqual(GetPlayer.GetHouse.GetFounder.Self,GetPlayer.Self)]"
-			name = "house"
-			size = { 24 24 }
-			tooltip = "INHERICHANCE_FOUNDED_HOUSE"
-			using = tooltip_se
-
-			coa_house_microscopic = {
-				datacontext = "[GetPlayer.GetHouse]"
-				blockoverride "coa_button" {}
-			}
-		}
-
-		icon = {
-			visible = "[ObjectsEqual(GetPlayer.GetFaith.GetFounder.Self,GetPlayer.Self)]"
-			name = "faith"
-			size = { 24 24 }
-			texture = "[LegacyItem.GetFoundedFaith.GetIcon]"
-			tooltip = "INHERICHANCE_FOUNDED_FAITH"
-			using = tooltip_se
-		}
-
-		icon = {
-			visible = "[ObjectsEqual(GetPlayer.GetCulture.GetCultureHead.Self,GetPlayer.Self)]"
-			name = "cultural_head"
-			size = { 24 24 }
-			texture = "gfx/interface/icons/icon_culture.dds"
-			tooltip = "INHERICHANCE_CULTURAL_HEAD"
-			using = tooltip_se
-		}
-
-		icon = {
-			visible = "[GreaterThanOrEqualTo_CFixedPoint(GetPlayer.GetDread, GetDefine('NCharacter', 'BOLD_LEVEL_INTIMIDATED') )]"
-			name = "dreaded"
-			size = { 24 24 }
-			texture = "gfx/interface/icons/icon_dread.dds"
-			tooltip = "LEGACY_DREADED"
-			using = tooltip_se
-		}
-
-		icon = {
-			name = "renowned"
-			size = { 24 24 }
-			texture = "[GetPrestigeLevelIcon(GetPlayer.GetPrestigeLevel)]"
-			tooltip = "INHERICHANCE_RENOWNED"
-			using = tooltip_se
-		}
-
-
-		icon = {
-			name = "pious"
-			size = { 24 24 }
-			texture = "[GetPietyLevelIcon(GetPlayer.GetPietyLevel)]"
-			tooltip = "INHERICHANCE_PIOUS"
-			using = tooltip_se
-		}
-
-		icon = {
-			name = "lifestyle"
-			visible = "[GetPlayer.GetLifestyle.IsValid]"
-			size = { 24 24 }
-			texture = "[GetPlayer.GetLifestyle.GetIcon]"
-			framesize = { 160 160 }
-
-			tooltip = "LEGACY_LIFESTYLE"
-			using = tooltip_se
-
-		}
-
-		# icon = {
-		# 	name = "wars"
-		# 	visible = "[LegacyItem.HasFoughtInWar]"
-		# 	size = { 24 24 }
-		# 	texture = "gfx/interface/icons/character_interactions/declare_war_interaction.dds"
-		# 	tooltip = "LEGACY_WARS"
-		# 	using = tooltip_se
-		# }
-	}
-
 	type vbox_legacy_item = vbox {
 		datacontext = "[LegacyItem.GetCharacter]"
 		layoutpolicy_vertical = expanding
@@ -1152,7 +1241,7 @@ types Legacy
 
 			blockoverride "portrait_button"
 			{
-				size = { 250 370 }
+				size = { 300 444 }
 			}
 		}
 
@@ -1168,85 +1257,4 @@ types Legacy
 			tooltip = "LEGACY_REIGN_TT"
 		}
 	}
-}
-
-types CoA {
-	type coa_title_small_crown_inherichance = coa_title_small_inherichance {
-		blockoverride "crown" {}
-	}
-
-	type coa_title_small_inherichance = button_group {
-		using = CoA_Title_Defaults_inherichance
-
-		flowcontainer = {
-			datacontext = "[Scope.Title]"
-			margin = { 3 7 }
-			direction = vertical
-			spacing = -3
-			ignoreinvisible = yes
-
-			icon = {
-				name = "crown"
-				parentanchor = hcenter
-				texture = "gfx/interface/coat_of_arms/crown_strip_44.dds"
-				frame = "[Title.GetTierFrame]"
-				framesize = { 28 20 }
-
-				block "crown" {
-					visible = no
-				}
-			}
-
-			widget = {
-				parentanchor = hcenter
-				size = { 50 50 }
-
-				coat_of_arms_icon = {
-					parentanchor = center
-					size = { 44 44 }
-					coat_of_arms = "[Title.GetTitleCoA.GetTexture('(int32)88','(int32)88')]"
-					coat_of_arms_slot = "[Title.GetTitleCoA.GetSlot('(int32)88','(int32)88')]"
-					coat_of_arms_mask = "gfx/interface/coat_of_arms/title_mask.dds"
-
-					using = CoA_Title_Hover_Glow
-
-					coa_title_frame = {
-						texture = "gfx/interface/coat_of_arms/title_44.dds"
-						size = { 50 50 }
-
-
-					}
-
-					coa_title_frame_no_holder = {
-						texture = "gfx/interface/coat_of_arms/title_no_holder_44.dds"
-						size = { 50 50 }
-
-
-					}
-
-
-
-
-				}
-			}
-		}
-	}
-}
-
-template CoA_Title_Defaults_inherichance
-{
-	datacontext = "[Scope.Title]"
-	block "coa_button"
-	{
-		block "coa_tooltip"
-		{
-			tooltipwidget = {
-				using = LandedTitleTooltip
-			}
-		}
-		onclick = "[DefaultOnCoatOfArmsClick(Title.GetID)]"
-		onrightclick = "[DefaultOnCoatOfArmsRightClick(Title.GetID)]"
-		button_ignore = none
-	}
-	using = State_Title_MouseEntry
 }

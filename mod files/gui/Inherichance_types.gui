@@ -1,0 +1,505 @@
+template UniUI_Inherichance_reign_duration_visibility {
+	visible = "[Not(EqualTo_string(LegacyItem.GetEndDate.GetString,LegacyItem.GetStartDate.GetString))]"
+}
+
+template UniUI_Inherichance_window_succession_event_show_state {
+	on_start = "[GetScriptedGui('sgui_inherichance').Execute(GuiScope.SetRoot( GetPlayer.MakeScope ).AddScope('dead_character',SuccessionEventWindow.GetDeadCharacter.MakeScope).End)]"
+}
+
+types UniUI_Inherichance_window_succession_event {
+	type UniUI_Inherichance_coa_title_small_crown = coa_title_small_crown {
+		datacontext = "[SuccessionEventWindow.GetPlayerHeir.GetPrimaryTitle]"
+		visible = "[Title.IsValid]"
+		parentanchor = bottom|hcenter
+	}
+
+	type UniUI_Inherichance_window_succession_event_text = vbox {
+		layoutpolicy_vertical = expanding
+		margin = { 10 10 }
+
+		text_multi = {
+			name = "end_date_description"
+			size = { 384 120 }
+			text = "SUCCESSION_EVENT_WINDOW_END_DATE_DESC"
+			using = Font_Size_Medium
+			visible = "[SuccessionEventWindow.IsEndDateReached]"
+			# autoresize = yes
+			# max_width = 400
+		}
+
+		
+
+		text_multi = {
+			name = "dead_description"
+			size = { 384 150 }
+			text = "[SuccessionEventWindow.GetDeadDesc]"
+			visible = "[And(Not(SuccessionEventWindow.IsEndDateReached), Not(SuccessionEventWindow.GetDeadCharacter.IsAlive))]"
+			using = Font_Size_Medium
+			
+		}
+
+		spacer = {
+			size = { 10 20 }
+		}
+
+		text_multi = {
+			visible = "[And(Not(SuccessionEventWindow.IsEndDateReached),EqualTo_uint32(GetPlayer.GetID,SuccessionEventWindow.GetPlayerHeir.GetID))]"
+			name = "heir_description"
+			size = { 384 120 }
+			text = "[SuccessionEventWindow.GetHeirDesc]"
+			using = Font_Size_Medium
+			# autoresize = yes
+			# max_width = 400
+		}
+
+		text_multi = {
+			visible = "[And(Not(SuccessionEventWindow.IsEndDateReached),Not(EqualTo_uint32(GetPlayer.GetID,SuccessionEventWindow.GetPlayerHeir.GetID)))]"
+			name = "heir_description_inherichance"
+			size = { 384 120 }
+			text = "INHERICHANCE_HEIR_DESC"
+			using = Font_Size_Medium
+			# autoresize = yes
+			# max_width = 400
+		}
+		expand = {}
+	}
+
+	type UniUI_Inherichance_window_succession_event_titles = vbox {
+		name = "titles"
+		layoutpolicy_vertical = expanding
+		layoutpolicy_horizontal = expanding
+		margin = { 6 6 }
+		spacing = 6
+
+		text_single = {
+			layoutpolicy_horizontal = expanding
+			text = "SUCCESSION_INHERITED_TITLES"
+		}
+
+		hbox = {
+			layoutpolicy_horizontal = expanding
+			margin_bottom = 15
+
+			fixedgridbox = { # hbox doesn't work with datamodel_wrap
+				name = "inherited"
+				datamodel = "[GetPlayer.MakeScope.Var('inherichance_titles_story').GetList('inherited_titles')]"
+				datamodel_wrap = 11
+				addcolumn = 56
+				addrow = 56
+				flipdirection = yes
+
+				item = {
+					
+					coa_title_small_crown_inherichance = {}
+				}
+			}
+
+			expand = {}
+		}
+
+		hbox = {
+			visible = "[SuccessionEventWindow.HasLostTitles]"
+			layoutpolicy_horizontal = expanding
+
+			text_single = {
+				text = "INHERICHANCE_LOST_TITLES"
+			}
+
+			button_expand = {
+				name = "show_lost_titles"
+				frame = "[Select_int32( SuccessionEventWindow.ShowLostTitles, '(int32)2', '(int32)1' )]"
+				onclick = "[SuccessionEventWindow.ToggleLostTitles]"
+				using = tooltip_ws
+			}
+
+			expand = {}
+		}
+
+		divider = {
+			visible = "[SuccessionEventWindow.HasLostTitles]"
+			layoutpolicy_horizontal = expanding
+		}
+
+		vbox = {
+			name = "lost_titles"
+			visible = "[And( SuccessionEventWindow.ShowLostTitles, SuccessionEventWindow.HasLostTitles )]"
+			layoutpolicy_horizontal = expanding
+			margin_top = 5
+
+			vbox = {
+				datamodel = "[GetPlayer.MakeScope.Var('inherichance_heirs_story').GetList('other_heirs')]"
+				layoutpolicy_horizontal = expanding
+				spacing = 8
+
+				
+				item = {
+					vbox = {
+						layoutpolicy_horizontal = expanding
+						spacing = 5
+
+						text_single = {
+							layoutpolicy_horizontal = expanding
+							text = "INHERICHANCE_LOST_TITLE_SHARE"
+							margin_left = 5
+						}
+
+						hbox = {
+							layoutpolicy_horizontal = expanding
+							spacing = 20
+
+							portrait_head_small = {
+								name = "portrait"
+								datacontext = "[Scope.GetCharacter]"
+
+								blockoverride "portrait_transformation"
+								{
+									portrait_scale = { -1 1 }
+									portrait_offset = { 1 0 }
+								}
+							}
+
+							fixedgridbox = { # hbox doesn't work with datamodel_wrap
+								name = "inherited"
+								datamodel = "[Scope.Var('inherichance_titles_story').GetList('inherited_titles')]"
+								datamodel_wrap = 9
+								addcolumn = 56
+								addrow = 56
+								flipdirection = yes
+
+								item = {
+									coa_title_small_crown_inherichance = {
+									}
+								}
+							}
+
+							expand = {}
+						}
+					}
+				}
+			}
+		}
+
+		expand = {
+			layoutpolicy_vertical = expanding
+		}
+	}
+
+	type UniUI_Inherichance_window_succession_event_buttons = hbox {
+		spacing = 15
+		button_primary = {
+			name = "close_button"
+			visible = "[SuccessionEventWindow.GetPlayerHeir.IsValid]"
+			onclick = "[PdxGuiTriggerAllAnimations('ruler_transition_reset')]"
+			onclick = "[GetScriptedGui('sgui_end_inherichance').Execute(GuiScope.SetRoot( GetPlayer.MakeScope ).End)]"
+			text = "INHERICHANCE_EVENT_WINDOW_CLOSE"
+			min_width = 330
+		}
+
+		button_standard = {
+			name = "observer_button"
+			visible = "[And( Not(SuccessionEventWindow.GetPlayerHeir.IsValid), SuccessionEventWindow.CanChangeCharacter)]"
+			text = "SUCCESSION_EVENT_WINDOW_OBSERVER"
+			onclick = "[SuccessionEventWindow.GoToObserver]"
+			onclick = "[GetScriptedGui('sgui_end_inherichance').Execute(GuiScope.SetRoot( GetPlayer.MakeScope ).End)]"
+			default_format = "#high"
+		}
+
+		button_standard = {
+			name = "change_button"
+			visible = "[And( Not(SuccessionEventWindow.GetPlayerHeir.IsValid), SuccessionEventWindow.CanChangeCharacter)]"
+			text = "SUCCESSION_EVENT_WINDOW_CHANGE_CHARACTER"
+			onclick = "[SuccessionEventWindow.ChooseNewCharacter]"
+			onclick = "[GetScriptedGui('sgui_end_inherichance').Execute(GuiScope.SetRoot( GetPlayer.MakeScope ).End)]"
+			default_format = "#high"
+		}
+
+		button_standard = {
+			name = "menu_button"
+			visible = "[Not(SuccessionEventWindow.GetPlayerHeir.IsValid)]"
+			text = "[SuccessionEventWindow.GetExitName]"
+			tooltip = "[SuccessionEventWindow.GetExitTooltip]"
+			onclick = "[SuccessionEventWindow.GoToMenu]"
+			onclick = "[GetScriptedGui('sgui_end_inherichance').Execute(GuiScope.SetRoot( GetPlayer.MakeScope ).End)]"
+			default_format = "#high"
+		}
+	}
+
+	type UniUI_Inherichance_window_succession_event_right_character = vbox {
+		layoutpolicy_vertical = expanding
+		spacing = 5
+
+		text_label_center = {
+			visible = "[SuccessionEventWindow.GetPlayerHeir.IsValid]"
+			text = "LEGACY_CONTINUE_PLAYING"
+		}
+
+		Inherichance_vbox_heir = {
+			name = "right"
+			datacontext = "[SuccessionEventWindow.GetPlayerHeirLegacy]"
+			visible = "[SuccessionEventWindow.GetPlayerHeir.IsValid]"
+			layoutpolicy_vertical = expanding
+
+			blockoverride "portrait_glow" {}
+
+			background = {
+				using = Background_Area
+			}
+		}
+
+		vbox_dynasty = {
+			name = "dynasty_right"
+			datacontext = "[SuccessionEventWindow.GetDeadCharacter.GetDynasty]"
+			visible = "[Not(SuccessionEventWindow.GetPlayerHeir.IsValid)]"
+			layoutpolicy_vertical = expanding
+		}
+	}
+
+	type UniUI_Inherichance_window_succession_event_vbox_current_lineage = Inherichance_vbox_current_lineage {
+		visible = "[SuccessionEventWindow.GetPlayerHeir.IsValid]"
+		datacontext = "[SuccessionEventWindow.GetPlayerHeirLegacy]"
+	}
+}
+
+types Inherichance_window_succession_event {
+	type coa_title_small_crown_inherichance = coa_title_small_inherichance {
+		blockoverride "crown" {}
+	}
+
+	type coa_title_small_inherichance = button_group {
+		using = CoA_Title_Defaults_inherichance
+
+		flowcontainer = {
+			datacontext = "[Scope.Title]"
+			margin = { 3 7 }
+			direction = vertical
+			spacing = -3
+			ignoreinvisible = yes
+
+			icon = {
+				name = "crown"
+				parentanchor = hcenter
+				texture = "gfx/interface/coat_of_arms/crown_strip_44.dds"
+				frame = "[Title.GetTierFrame]"
+				framesize = { 28 20 }
+
+				block "crown" {
+					visible = no
+				}
+			}
+
+			widget = {
+				parentanchor = hcenter
+				size = { 50 50 }
+
+				coat_of_arms_icon = {
+					parentanchor = center
+					size = { 44 44 }
+					coat_of_arms = "[Title.GetTitleCoA.GetTexture('(int32)88','(int32)88')]"
+					coat_of_arms_slot = "[Title.GetTitleCoA.GetSlot('(int32)88','(int32)88')]"
+					coat_of_arms_mask = "gfx/interface/coat_of_arms/title_mask.dds"
+
+					using = CoA_Title_Hover_Glow
+
+					coa_title_frame = {
+						texture = "gfx/interface/coat_of_arms/title_44.dds"
+						size = { 50 50 }
+
+
+					}
+
+					coa_title_frame_no_holder = {
+						texture = "gfx/interface/coat_of_arms/title_no_holder_44.dds"
+						size = { 50 50 }
+
+
+					}
+
+
+
+
+				}
+			}
+		}
+	}
+
+	type Inherichance_hbox_legacy_status = hbox {
+		spacing = 2
+
+		widget = {
+			visible = "[ObjectsEqual(GetPlayer.GetHouse.GetFounder.Self,GetPlayer.Self)]"
+			name = "house"
+			size = { 24 24 }
+			tooltip = "INHERICHANCE_FOUNDED_HOUSE"
+			using = tooltip_se
+
+			coa_house_microscopic = {
+				datacontext = "[GetPlayer.GetHouse]"
+				blockoverride "coa_button" {}
+			}
+		}
+
+		icon = {
+			visible = "[ObjectsEqual(GetPlayer.GetFaith.GetFounder.Self,GetPlayer.Self)]"
+			name = "faith"
+			size = { 24 24 }
+			texture = "[LegacyItem.GetFoundedFaith.GetIcon]"
+			tooltip = "INHERICHANCE_FOUNDED_FAITH"
+			using = tooltip_se
+		}
+
+		icon = {
+			visible = "[ObjectsEqual(GetPlayer.GetCulture.GetCultureHead.Self,GetPlayer.Self)]"
+			name = "cultural_head"
+			size = { 24 24 }
+			texture = "gfx/interface/icons/icon_culture.dds"
+			tooltip = "INHERICHANCE_CULTURAL_HEAD"
+			using = tooltip_se
+		}
+
+		icon = {
+			visible = "[GreaterThanOrEqualTo_CFixedPoint(GetPlayer.GetDread, GetDefine('NCharacter', 'BOLD_LEVEL_INTIMIDATED') )]"
+			name = "dreaded"
+			size = { 24 24 }
+			texture = "gfx/interface/icons/icon_dread.dds"
+			tooltip = "LEGACY_DREADED"
+			using = tooltip_se
+		}
+
+		icon = {
+			name = "renowned"
+			size = { 24 24 }
+			texture = "[GetPrestigeLevelIcon(GetPlayer.GetPrestigeLevel)]"
+			tooltip = "INHERICHANCE_RENOWNED"
+			using = tooltip_se
+		}
+
+
+		icon = {
+			name = "pious"
+			size = { 24 24 }
+			texture = "[GetPietyLevelIcon(GetPlayer.GetPietyLevel)]"
+			tooltip = "INHERICHANCE_PIOUS"
+			using = tooltip_se
+		}
+
+		icon = {
+			name = "lifestyle"
+			visible = "[GetPlayer.GetLifestyle.IsValid]"
+			size = { 24 24 }
+			texture = "[GetPlayer.GetLifestyle.GetIcon]"
+			framesize = { 160 160 }
+
+			tooltip = "LEGACY_LIFESTYLE"
+			using = tooltip_se
+
+		}
+
+		# icon = {
+		# 	name = "wars"
+		# 	visible = "[LegacyItem.HasFoughtInWar]"
+		# 	size = { 24 24 }
+		# 	texture = "gfx/interface/icons/character_interactions/declare_war_interaction.dds"
+		# 	tooltip = "LEGACY_WARS"
+		# 	using = tooltip_se
+		# }
+	}
+
+	type Inherichance_vbox_heir = vbox {
+		margin_bottom = 5
+
+		widget = {
+			size = { 250 340 }
+
+			portrait_body = {
+				datacontext = "[GetPlayer]"
+				blockoverride "status_icons" {}
+				blockoverride "opinion_box" {}
+				blockoverride "coa" {}
+				blockoverride "dead_icon" {}
+				scale = 1.2
+			}
+		}
+
+		spacer = {
+			size = { 20 10 }
+		}
+
+		Inherichance_hbox_legacy_status = {}
+
+		text_single = {
+			layoutpolicy_horizontal = expanding
+			autoresize = no
+			text = "LEGACY_NAME"
+			default_format = "#high"
+			align = center
+		}
+
+		text_single = {
+			text = "[GetPlayer.GetSuccessionRelation( SuccessionEventWindow.GetDeadCharacter)]"
+		}
+
+		spacer = {
+			size = { 20 10 }
+		}
+
+		text_label_center = {
+			visible = "[GetPlayer.IsAtWar]"
+			text = "LEGACY_IS_AT_WAR"
+		}
+
+		text_label_center = {
+			visible = "[Not(GetPlayer.GetPlayerHeir.IsValid)]"
+			text = "LEGACY_NO_HEIR"
+		}
+
+		expand = {}
+	}
+
+	type Inherichance_vbox_current_lineage = vbox {
+		datacontext = "[GetPlayer]"
+
+		portrait_body = {
+			blockoverride "status_icons" {}
+			blockoverride "opinion_box" {}
+			blockoverride "coa" {}
+			blockoverride "dead_icon" {}
+
+			blockoverride "portrait_button"
+			{
+				size = { 250 370 }
+			}
+
+			blockoverride "portrait_glow" {}
+		}
+
+		Inherichance_hbox_legacy_status = {}
+
+		text_single = {
+			text = "LEGACY_NAME"
+			default_Format = "#high"
+		}
+
+		text_single = {
+			text = "LEGACY_LINEAGE_YOU"
+		}
+	}
+
+	
+}
+
+template CoA_Title_Defaults_inherichance {
+	datacontext = "[Scope.Title]"
+	block "coa_button"
+	{
+		block "coa_tooltip"
+		{
+			tooltipwidget = {
+				using = LandedTitleTooltip
+			}
+		}
+		onclick = "[DefaultOnCoatOfArmsClick(Title.GetID)]"
+		onrightclick = "[DefaultOnCoatOfArmsRightClick(Title.GetID)]"
+		button_ignore = none
+	}
+	using = State_Title_MouseEntry
+}

@@ -1,0 +1,14 @@
+﻿namespace = Inherichance_error_suppression
+
+Inherichance_error_suppression.0001 = {
+	hidden = yes
+	orphan = yes
+
+	trigger = {
+		exists = global_var:Inherichance_is_loaded
+		has_variable = other_heirs
+		has_variable = inherichance_lost_titles_number
+		has_variable = heir
+		has_variable = inherichance_titles_story
+	}
+}
